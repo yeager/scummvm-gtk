@@ -1,0 +1,63 @@
+name: Build .rpm
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: dnf install -y rpm-build python3 python3-devel sed coreutils
+      - name: Build RPM
+        run: |
+          VER=$(python3 -c 'exec(open("src/scummvm_gtk/__init__.py").read()); print(__version__)')
+          PKG=scummvm-gtk
+          
+          mkdir -p ~/rpmbuild/{SOURCES,SPECS,BUILD,RPMS,SRPMS}
+          tar czf ~/rpmbuild/SOURCES/${PKG}-${VER}.tar.gz --transform="s,^,${PKG}-${VER}/," src/ 
+          
+          SPEC=$(cat <<'SPEC_END'
+          Name:           scummvm-gtk
+          Version:        VERSIONPLACEHOLDER
+          Release:        1
+          Summary:        GTK4/Adwaita frontend for ScummVM
+          License:        GPL-3.0-or-later
+          URL:            https://github.com/yeager/scummvm-gtk
+          Source0:        scummvm-gtk-VERSIONPLACEHOLDER.tar.gz
+          BuildArch:      noarch
+          Requires:       python3, python3-gobject, gtk4, libadwaita
+          Recommends:     scummvm
+          
+          %description
+          Browse, search and launch ScummVM games with a modern
+          Linux desktop interface.
+          
+          %prep
+          %setup -q
+          
+          %install
+          mkdir -p %{buildroot}/usr/lib/python3/dist-packages/scummvm_gtk
+          cp src/scummvm_gtk/*.py %{buildroot}/usr/lib/python3/dist-packages/scummvm_gtk/
+          mkdir -p %{buildroot}/usr/bin
+          echo '#!/usr/bin/env python3' > %{buildroot}/usr/bin/scummvm-gtk
+          echo 'from scummvm_gtk.main import main' >> %{buildroot}/usr/bin/scummvm-gtk
+          echo 'main()' >> %{buildroot}/usr/bin/scummvm-gtk
+          chmod +x %{buildroot}/usr/bin/scummvm-gtk
+          
+          %files
+          /usr/lib/python3/dist-packages/scummvm_gtk/
+          /usr/bin/scummvm-gtk
+          SPEC_END
+          )
+          
+          echo "$SPEC" | sed "s/VERSIONPLACEHOLDER/$VER/g; s/^          //" > ~/rpmbuild/SPECS/${PKG}.spec
+          rpmbuild -bb ~/rpmbuild/SPECS/${PKG}.spec
+          cp ~/rpmbuild/RPMS/noarch/*.rpm .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm-package
+          path: '*.rpm'

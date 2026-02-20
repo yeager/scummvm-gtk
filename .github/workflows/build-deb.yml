@@ -1,0 +1,64 @@
+name: Build .deb
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set version
+        run: echo "VERSION=$(python3 -c 'exec(open("src/scummvm_gtk/__init__.py").read()); print(__version__)')" >> $GITHUB_ENV
+      - name: Build .deb
+        run: |
+          PKG=scummvm-gtk
+          mkdir -p pkg/DEBIAN
+          mkdir -p pkg/usr/lib/python3/dist-packages/scummvm_gtk
+          mkdir -p pkg/usr/bin
+          mkdir -p pkg/usr/share/applications
+          
+          cp src/scummvm_gtk/*.py pkg/usr/lib/python3/dist-packages/scummvm_gtk/
+          
+          cat > pkg/usr/bin/scummvm-gtk <<'BIN'
+          #!/usr/bin/env python3
+          from scummvm_gtk.main import main
+          main()
+          BIN
+          chmod +x pkg/usr/bin/scummvm-gtk
+          sed -i 's/^          //' pkg/usr/bin/scummvm-gtk
+          
+          cat > pkg/usr/share/applications/se.danielnylander.scummvm-gtk.desktop <<'DESK'
+          [Desktop Entry]
+          Name=ScummVM GTK
+          Comment=GTK4 frontend for ScummVM
+          Exec=scummvm-gtk
+          Icon=applications-games
+          Terminal=false
+          Type=Application
+          Categories=Game;
+          DESK
+          sed -i 's/^          //' pkg/usr/share/applications/se.danielnylander.scummvm-gtk.desktop
+          
+          cat > pkg/DEBIAN/control <<CTRL
+          Package: scummvm-gtk
+          Version: ${VERSION}-1
+          Architecture: all
+          Maintainer: Daniel Nylander <daniel@danielnylander.se>
+          Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1
+          Recommends: scummvm
+          Section: games
+          Priority: optional
+          Homepage: https://github.com/yeager/scummvm-gtk
+          Description: GTK4/Adwaita frontend for ScummVM
+           Browse, search and launch ScummVM games with a modern
+           Linux desktop interface.
+          CTRL
+          sed -i 's/^          //' pkg/DEBIAN/control
+          
+          dpkg-deb --build pkg ${PKG}_${VERSION}-1_all.deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb-package
+          path: '*.deb'
