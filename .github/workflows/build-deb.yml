@@ -41,6 +41,16 @@ jobs:
           DESK
           sed -i 's/^          //' pkg/usr/share/applications/se.danielnylander.scummvm-gtk.desktop
           
+          # Translations
+          if [ -d po ]; then
+            for po in po/*.po; do
+              [ -f "$po" ] || continue
+              lang=$(basename "$po" .po)
+              mkdir -p ${ROOT}/usr/share/locale/${lang}/LC_MESSAGES
+              msgfmt -o ${ROOT}/usr/share/locale/${lang}/LC_MESSAGES/${PKG}.mo "$po"
+            done
+          fi
+
           cat > pkg/DEBIAN/control <<CTRL
           Package: scummvm-gtk
           Version: ${VERSION}-1
