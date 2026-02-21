@@ -11,6 +11,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set version
         run: echo "VERSION=$(python3 -c 'exec(open("src/scummvm_gtk/__init__.py").read()); print(__version__)')" >> $GITHUB_ENV
+      - name: Install build deps
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq gettext
       - name: Build .deb
         run: |
           PKG=scummvm-gtk
