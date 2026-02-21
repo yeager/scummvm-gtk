@@ -11,14 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install deps
-        run: dnf install -y rpm-build python3 python3-devel sed coreutils
+        run: dnf install -y rpm-build python3 python3-devel sed coreutils gettext
       - name: Build RPM
         run: |
           VER=$(python3 -c 'exec(open("src/scummvm_gtk/__init__.py").read()); print(__version__)')
           PKG=scummvm-gtk
           
           mkdir -p ~/rpmbuild/{SOURCES,SPECS,BUILD,RPMS,SRPMS}
-          tar czf ~/rpmbuild/SOURCES/${PKG}-${VER}.tar.gz --transform="s,^,${PKG}-${VER}/," src/ 
+          tar czf ~/rpmbuild/SOURCES/${PKG}-${VER}.tar.gz --transform="s,^,${PKG}-${VER}/," src/ po/ data/ *.desktop *.metainfo.xml 2>/dev/null || tar czf ~/rpmbuild/SOURCES/${PKG}-${VER}.tar.gz --transform="s,^,${PKG}-${VER}/," src/ po/ 
           
           SPEC=$(cat <<'SPEC_END'
           Name:           scummvm-gtk
@@ -48,9 +48,27 @@ jobs:
           echo 'main()' >> %{buildroot}/usr/bin/scummvm-gtk
           chmod +x %{buildroot}/usr/bin/scummvm-gtk
           
+          for f in data/*.desktop *.desktop; do
+            [ -f "$f" ] && install -m 644 "$f" %{buildroot}/usr/share/applications/ 2>/dev/null
+          done
+          for f in data/*.metainfo.xml *.metainfo.xml; do
+            [ -f "$f" ] && install -m 644 "$f" %{buildroot}/usr/share/metainfo/ 2>/dev/null
+          done
+          find data/icons -name "*.svg" -exec install -m 644 {} %{buildroot}/usr/share/icons/hicolor/scalable/apps/ \; 2>/dev/null || true
+          for po in po/*.po; do
+            [ -f "$po" ] || continue
+            lang=$(basename "$po" .po)
+            mkdir -p %{buildroot}/usr/share/locale/$lang/LC_MESSAGES
+            msgfmt -o %{buildroot}/usr/share/locale/$lang/LC_MESSAGES/%{name}.mo "$po"
+          done
+                    mkdir -p %{buildroot}/usr/share/applications %{buildroot}/usr/share/metainfo %{buildroot}/usr/share/icons/hicolor/scalable/apps
           %files
           /usr/lib/python3/dist-packages/scummvm_gtk/
           /usr/bin/scummvm-gtk
+          /usr/share/applications/
+          /usr/share/metainfo/
+          /usr/share/icons/
+          /usr/share/locale/*/LC_MESSAGES/%{name}.mo
           SPEC_END
           )
           
