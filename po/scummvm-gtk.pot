@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the scummvm-gtk package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: scummvm-gtk 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-22 06:25+0100\n"
+"POT-Creation-Date: 2026-02-22 13:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,125 +17,315 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/scummvm_gtk/main.py:93
+#: src/scummvm_gtk/games.py:19
+msgid "Name (A-Z)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:20
+msgid "Name (Z-A)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:21
+msgid "Year (oldest)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:22
+msgid "Year (newest)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:23
+msgid "Developer (A-Z)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:24
+msgid "Engine (A-Z)"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:518
+#, python-format
+msgid "%d seconds"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:520
+#, python-format
+msgid "%d minutes"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:525
+#, python-format
+msgid "%dh %dm"
+msgstr ""
+
+#: src/scummvm_gtk/games.py:526
+#, python-format
+msgid "%d hours"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:68
+msgid "80s"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:70
+msgid "90s"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:119
 msgid "Installed"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:140
+#: src/scummvm_gtk/main.py:182
 msgid "Select a game"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:148
+#: src/scummvm_gtk/main.py:204
 msgid "Details"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:150
+#: src/scummvm_gtk/main.py:206
 msgid "Year"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:153
+#: src/scummvm_gtk/main.py:209
 msgid "Developer"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:156
+#: src/scummvm_gtk/main.py:212
 msgid "Engine"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:159
+#: src/scummvm_gtk/main.py:215
 msgid "Platform"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:162
+#: src/scummvm_gtk/main.py:218
+msgid "Genre"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:221
 msgid "Game ID"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:176
+#: src/scummvm_gtk/main.py:225
+msgid "Play Time"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:229
+msgid "Last Played"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:252
 msgid "Launch Game"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:190 src/scummvm_gtk/main.py:191
-#: src/scummvm_gtk/main.py:192 src/scummvm_gtk/main.py:193
+#: src/scummvm_gtk/main.py:266
+msgid "Remove from Favorites"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:266
+msgid "Add to Favorites"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:279 src/scummvm_gtk/main.py:280
+#: src/scummvm_gtk/main.py:281 src/scummvm_gtk/main.py:282
+#: src/scummvm_gtk/main.py:283 src/scummvm_gtk/main.py:757
 msgid "Unknown"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:222 src/scummvm_gtk/main.py:235
-#: src/scummvm_gtk/main.py:433
+#: src/scummvm_gtk/main.py:293
+#, python-format
+msgid "Compatibility: %s"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:307 src/scummvm_gtk/main.py:316
+#: src/scummvm_gtk/main.py:364
+msgid "Never"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:331
+msgid "Loading Wikipedia summary..."
+msgstr ""
+
+#: src/scummvm_gtk/main.py:378 src/scummvm_gtk/main.py:546
+msgid "Settings"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:387
+msgid "General"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:392
+msgid "Launch"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:395
+msgid "Launch Mode"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:396
+msgid "Windowed"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:396
+msgid "Fullscreen"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:403
+msgid "ScummVM Path"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:412
+msgid "Display"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:414
+msgid "Default Sort"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:428
+msgid "Cache"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:430
+msgid "Clear Cache"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:431
+msgid "Remove downloaded icons and Wikipedia data"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:432
+msgid "Clear"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:454
+msgid "Cleared!"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:465 src/scummvm_gtk/main.py:484
+#: src/scummvm_gtk/main.py:1021
 msgid "ScummVM GTK"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:236
+#: src/scummvm_gtk/main.py:485
 msgid "ScummVM Game Launcher"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:242
+#: src/scummvm_gtk/main.py:491
 msgid "Search games (Ctrl+F)"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:249
+#: src/scummvm_gtk/main.py:498
 msgid "Grid View"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:254
+#: src/scummvm_gtk/main.py:503
+msgid "Show Installed Only"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:509
+msgid "Favorites First"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:520
+msgid "Sort games"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:526
+msgid "All Genres"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:529
+msgid "Filter by genre"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:535
 msgid "Toggle Theme"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:261
+#: src/scummvm_gtk/main.py:542
 msgid "Scan for Games"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:262
+#: src/scummvm_gtk/main.py:543
+msgid "Group by Engine"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:544 src/scummvm_gtk/main.py:852
+msgid "Export Library"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:545 src/scummvm_gtk/main.py:866
+msgid "Import Library"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:547
 msgid "About ScummVM GTK"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:272
+#: src/scummvm_gtk/main.py:557
 msgid "Search games..."
 msgstr ""
 
-#: src/scummvm_gtk/main.py:320
+#: src/scummvm_gtk/main.py:610
 msgid "Loading games..."
 msgstr ""
 
-#: src/scummvm_gtk/main.py:350
+#: src/scummvm_gtk/main.py:680
 #, python-format
 msgid "%d games (%d installed)"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:385
+#: src/scummvm_gtk/main.py:717
 #, python-format
-msgid "%d games found"
+msgid "%d games shown"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:388
+#: src/scummvm_gtk/main.py:764
+#, python-format
+msgid "Engine: %s"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:800
 msgid "Scanning for games..."
 msgstr ""
 
-#: src/scummvm_gtk/main.py:442
-msgid ""
-"GTK4/Adwaita frontend for ScummVM game launcher.\n"
-"Browse, search and launch your ScummVM games."
+#: src/scummvm_gtk/main.py:868
+msgid "JSON files"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:443
-msgid "translator-credits"
+#: src/scummvm_gtk/main.py:896
+msgid "ScummVM not found"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:458
+#: src/scummvm_gtk/main.py:970
 msgid "Welcome"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:463
+#: src/scummvm_gtk/main.py:975
 msgid "Welcome to ScummVM Launcher"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:464
+#: src/scummvm_gtk/main.py:977
 msgid ""
 "Launch and manage ScummVM games.\n"
 "\n"
 "✓ Browse your game collection\n"
 "✓ Grid view with cover art\n"
-"✓ Quick launch"
+"✓ Quick launch\n"
+"✓ Favorites and play time tracking\n"
+"✓ Wikipedia game descriptions"
 msgstr ""
 
-#: src/scummvm_gtk/main.py:465
+#: src/scummvm_gtk/main.py:984
 msgid "Get Started"
+msgstr ""
+
+#: src/scummvm_gtk/main.py:1030
+msgid ""
+"GTK4/Adwaita frontend for ScummVM game launcher.\n"
+"Browse, search and launch your ScummVM games."
+msgstr ""
+
+#: src/scummvm_gtk/main.py:1031
+msgid "translator-credits"
 msgstr ""
