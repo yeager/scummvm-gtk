@@ -1,40 +1,25 @@
 # ScummVM GTK
 
-GTK4/Adwaita frontend for ScummVM — browse, search and launch your ScummVM games with a modern Linux desktop interface.
+ScummVM game launcher with grid view and game details.
 
-![Screenshot](screenshots/main.png)
-
-## Features
-
-- 🎮 Browse 30+ classic ScummVM games in a grid view
-- 🔍 Search games by name, engine, or developer
-- 📋 Detailed side panel with game info (year, developer, engine, platform)
-- 🖼️ Game icons from the official ScummVM icons repository
-- 🚀 Launch games directly from the interface
-- 🔄 Auto-detect installed ScummVM games
-- 🌙 Dark/light theme toggle
-- 🌍 Translatable via gettext
+Built with GTK4/Adwaita. Part of the [Danne L10n Suite](https://github.com/yeager/debian-repo).
 
 ## Installation
 
-### From source
-
+### Debian/Ubuntu
 ```bash
-pip install .
-scummvm-gtk
+sudo apt install scummvm-gtk
 ```
 
-### Requirements
-
-- Python 3.10+
-- GTK4, libadwaita
-- PyGObject
-- ScummVM (optional, for launching games)
+### Fedora/RPM
+```bash
+sudo dnf install scummvm-gtk
+```
 
 ## License
 
-GPL-3.0-or-later
+GPL-3.0
 
 ## Author
 
-Daniel Nylander <daniel@danielnylander.se>
+Daniel Nylander — [danielnylander.se](https://danielnylander.se)
