@@ -27,6 +27,14 @@ SORT_OPTIONS = [
 # ─── Genre list (feature 8) ────────────────────────────────────────────
 ALL_GENRES = ["Adventure", "Puzzle", "RPG", "Action", "Strategy"]
 
+# Translatable compatibility ratings — these are used via _(game.compatibility)
+# xgettext markers (not called at import, just for string extraction):
+if False:
+    _("Excellent")
+    _("Good")
+    _("Fair")
+    _("Poor")
+
 
 def get_cache_dir():
     p = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "scummvm-gtk"
@@ -425,10 +433,136 @@ def get_all_games(scummvm_path="scummvm"):
     return sorted(known.values(), key=lambda g: g.name)
 
 
+def get_covers_dir():
+    p = get_cache_dir() / "covers"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def get_screenshots_dir():
+    p = get_cache_dir() / "screenshots"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+# ─── Cover Art Sources ──────────────────────────────────────────────────
+
+# MobyGames mapping: game_id → MobyGames slug
+MOBYGAMES_SLUGS = {
+    "monkey": "secret-of-monkey-island", "monkey2": "monkey-island-2-lechucks-revenge",
+    "atlantis": "indiana-jones-and-the-fate-of-atlantis", "tentacle": "maniac-mansion-day-of-the-tentacle",
+    "samnmax": "sam-max-hit-the-road", "dig": "dig", "ft": "full-throttle",
+    "comi": "curse-of-monkey-island", "grim": "grim-fandango",
+    "maniac": "maniac-mansion", "loom": "loom", "zak": "zak-mckracken-and-the-alien-mindbenders",
+    "sky": "beneath-a-steel-sky", "sword1": "broken-sword-shadow-of-the-templars",
+    "sword2": "broken-sword-ii-the-smoking-mirror", "queen": "flight-of-the-amazon-queen",
+    "simon1": "simon-the-sorcerer", "simon2": "simon-the-sorcerer-ii-the-lion-the-wizard-and-the-wardrobe",
+    "myst": "myst", "riven": "riven-the-sequel-to-myst", "dreamweb": "dreamweb",
+}
+
+
+def fetch_cover_art(game_id, source="scummvm", callback=None):
+    """Fetch cover art from the selected source. Returns path to image or None."""
+    dest = get_covers_dir() / f"{game_id}_{source}.jpg"
+    if dest.exists():
+        if callback:
+            callback(str(dest))
+        return str(dest)
+
+    url = None
+    if source == "scummvm":
+        # Use the standard ScummVM icon (already handled by download_icon)
+        return download_icon(game_id, callback)
+
+    elif source == "mobygames":
+        slug = MOBYGAMES_SLUGS.get(game_id)
+        if slug:
+            # MobyGames cover art (public, no API key needed for thumbnails)
+            url = f"https://www.mobygames.com/game/{slug}/cover/coverart"
+
+    elif source == "igdb":
+        # IGDB requires auth — placeholder for future API integration
+        pass
+
+    elif source == "thegamesdb":
+        # TheGamesDB — free API, covers available
+        try:
+            search_url = f"https://cdn.thegamesdb.net/images/original/boxart/front/{game_id}-1.jpg"
+            url = search_url
+        except Exception:
+            pass
+
+    elif source == "local":
+        settings = load_settings()
+        local_path = Path(settings.get("art_local_path", ""))
+        if local_path.is_dir():
+            for ext in [".jpg", ".jpeg", ".png", ".webp"]:
+                candidate = local_path / f"{game_id}{ext}"
+                if candidate.exists():
+                    if callback:
+                        callback(str(candidate))
+                    return str(candidate)
+
+    if url:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "ScummVM-GTK/0.2.0"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = resp.read()
+                if len(data) > 1000:  # sanity check
+                    with open(dest, "wb") as f:
+                        f.write(data)
+                    if callback:
+                        callback(str(dest))
+                    return str(dest)
+        except Exception:
+            pass
+
+    if callback:
+        callback(None)
+    return None
+
+
+def fetch_cover_art_async(game_id, source, callback):
+    threading.Thread(target=fetch_cover_art, args=(game_id, source, callback), daemon=True).start()
+
+
+def fetch_screenshot(game_id, source="scummvm", callback=None):
+    """Fetch in-game screenshot if available."""
+    dest = get_screenshots_dir() / f"{game_id}_{source}.jpg"
+    if dest.exists():
+        if callback:
+            callback(str(dest))
+        return str(dest)
+
+    # ScummVM wiki has screenshots for many games
+    if source == "scummvm":
+        url = f"https://www.scummvm.org/data/screenshots/{game_id}/scummvm-{game_id}-0.jpg"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "ScummVM-GTK/0.2.0"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = resp.read()
+                if len(data) > 1000:
+                    with open(dest, "wb") as f:
+                        f.write(data)
+                    if callback:
+                        callback(str(dest))
+                    return str(dest)
+        except Exception:
+            pass
+
+    if callback:
+        callback(None)
+    return None
+
+
+def fetch_screenshot_async(game_id, source, callback):
+    threading.Thread(target=fetch_screenshot, args=(game_id, source, callback), daemon=True).start()
+
+
 def clear_cache():
-    """Clear wiki and icon caches."""
+    """Clear wiki, icon, cover and screenshot caches."""
     import shutil
-    for d in [get_wiki_dir(), get_icons_dir()]:
+    for d in [get_wiki_dir(), get_icons_dir(), get_covers_dir(), get_screenshots_dir()]:
         if d.exists():
             shutil.rmtree(d)
             d.mkdir(parents=True, exist_ok=True)

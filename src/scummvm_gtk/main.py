@@ -423,6 +423,46 @@ class SettingsWindow(Adw.PreferencesWindow):
 
         page.add(sort_group)
 
+        # Cover Art group
+        art_group = Adw.PreferencesGroup()
+        art_group.set_title(_("Cover Art"))
+        art_group.set_description(_("Select sources for game cover art, screenshots and media"))
+
+        self.art_source_row = Adw.ComboRow(title=_("Art Source"))
+        art_sources = Gtk.StringList.new([
+            _("ScummVM Icons (default)"),
+            _("MobyGames"),
+            _("IGDB"),
+            _("TheGamesDB"),
+            _("Local folder"),
+        ])
+        self.art_source_row.set_model(art_sources)
+        art_source_keys = ["scummvm", "mobygames", "igdb", "thegamesdb", "local"]
+        current_source = settings.get("art_source", "scummvm")
+        art_idx = art_source_keys.index(current_source) if current_source in art_source_keys else 0
+        self.art_source_row.set_selected(art_idx)
+        self.art_source_row.connect("notify::selected", self._on_setting_changed)
+        art_group.add(self.art_source_row)
+
+        self.art_local_row = Adw.EntryRow(title=_("Local Art Folder"))
+        self.art_local_row.set_text(settings.get("art_local_path", ""))
+        self.art_local_row.connect("changed", self._on_setting_changed)
+        art_group.add(self.art_local_row)
+
+        self.fetch_screenshots_switch = Adw.SwitchRow(title=_("Fetch Screenshots"))
+        self.fetch_screenshots_switch.set_subtitle(_("Download in-game screenshots when available"))
+        self.fetch_screenshots_switch.set_active(settings.get("fetch_screenshots", False))
+        self.fetch_screenshots_switch.connect("notify::active", self._on_setting_changed)
+        art_group.add(self.fetch_screenshots_switch)
+
+        self.fetch_covers_switch = Adw.SwitchRow(title=_("Fetch Cover Art"))
+        self.fetch_covers_switch.set_subtitle(_("Download box art and cover images"))
+        self.fetch_covers_switch.set_active(settings.get("fetch_covers", True))
+        self.fetch_covers_switch.connect("notify::active", self._on_setting_changed)
+        art_group.add(self.fetch_covers_switch)
+
+        page.add(art_group)
+
         # Cache group
         cache_group = Adw.PreferencesGroup()
         cache_group.set_title(_("Cache"))
@@ -447,6 +487,12 @@ class SettingsWindow(Adw.PreferencesWindow):
         sort_keys = [k for k, _ in SORT_OPTIONS]
         idx = self.sort_row.get_selected()
         settings["default_sort"] = sort_keys[idx] if idx < len(sort_keys) else "name_asc"
+        art_source_keys = ["scummvm", "mobygames", "igdb", "thegamesdb", "local"]
+        art_idx = self.art_source_row.get_selected()
+        settings["art_source"] = art_source_keys[art_idx] if art_idx < len(art_source_keys) else "scummvm"
+        settings["art_local_path"] = self.art_local_row.get_text().strip()
+        settings["fetch_screenshots"] = self.fetch_screenshots_switch.get_active()
+        settings["fetch_covers"] = self.fetch_covers_switch.get_active()
         save_settings(settings)
 
     def _on_clear_cache(self, btn):
@@ -968,8 +1014,8 @@ class Application(Adw.Application):
     def _show_welcome(self, win):
         dialog = Adw.Dialog()
         dialog.set_title(_("Welcome"))
-        dialog.set_content_width(420)
-        dialog.set_content_height(480)
+        dialog.set_content_width(500)
+        dialog.set_content_height(580)
         page = Adw.StatusPage()
         page.set_icon_name("applications-games-symbolic")
         page.set_title(_("Welcome to ScummVM Launcher"))
