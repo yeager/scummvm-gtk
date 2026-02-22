@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: scummvm-gtk 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-22 13:37+0100\n"
+"POT-Creation-Date: 2026-02-22 14:30+0100\n"
 "PO-Revision-Date: 2026-02-20 06:47+0000\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>, 2026\n"
 "Language-Team: Swedish (https://app.transifex.com/danielnylander/teams/305086/sv/)\n"
@@ -45,22 +45,38 @@ msgstr "Utvecklare (A-Ö)"
 msgid "Engine (A-Z)"
 msgstr "Motor (A-Ö)"
 
-#: src/scummvm_gtk/games.py:518
+#: src/scummvm_gtk/games.py:33
+msgid "Excellent"
+msgstr "Utmärkt"
+
+#: src/scummvm_gtk/games.py:34
+msgid "Good"
+msgstr "Bra"
+
+#: src/scummvm_gtk/games.py:35
+msgid "Fair"
+msgstr "Ok"
+
+#: src/scummvm_gtk/games.py:36
+msgid "Poor"
+msgstr "Dåligt"
+
+#: src/scummvm_gtk/games.py:652
 #, python-format
 msgid "%d seconds"
 msgstr "%d sekunder"
 
-#: src/scummvm_gtk/games.py:520
+#: src/scummvm_gtk/games.py:654
 #, python-format
 msgid "%d minutes"
 msgstr "%d minuter"
 
-#: src/scummvm_gtk/games.py:525
+#: src/scummvm_gtk/games.py:659
 #, python-format
 msgid "%dh %dm"
 msgstr "%dh %dm"
 
-#: src/scummvm_gtk/games.py:526
+#: src/scummvm_gtk/games.py:660
 #, python-format
 msgid "%d hours"
 msgstr "%d timmar"
@@ -131,7 +147,7 @@ msgstr "Lägg till i favoriter"
 
 #: src/scummvm_gtk/main.py:279 src/scummvm_gtk/main.py:280
 #: src/scummvm_gtk/main.py:281 src/scummvm_gtk/main.py:282
-#: src/scummvm_gtk/main.py:283 src/scummvm_gtk/main.py:757
+#: src/scummvm_gtk/main.py:283 src/scummvm_gtk/main.py:803
 msgid "Unknown"
 msgstr "Okänt"
 
@@ -149,7 +165,7 @@ msgstr "Aldrig"
 msgid "Loading Wikipedia summary..."
 msgstr "Läser in Wikipedia-sammandrag..."
 
-#: src/scummvm_gtk/main.py:378 src/scummvm_gtk/main.py:546
+#: src/scummvm_gtk/main.py:378 src/scummvm_gtk/main.py:592
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -186,130 +202,182 @@ msgid "Default Sort"
 msgstr "Standardsortering"
 
 #: src/scummvm_gtk/main.py:428
+msgid "Cover Art"
+msgstr "Omslagsbilder"
+
+#: src/scummvm_gtk/main.py:429
+msgid "Select sources for game cover art, screenshots and media"
+msgstr "Välj källor för spelomslag, skärmdumpar och media"
+
+#: src/scummvm_gtk/main.py:431
+msgid "Art Source"
+msgstr "Bildkälla"
+
+#: src/scummvm_gtk/main.py:433
+msgid "ScummVM Icons (default)"
+msgstr "ScummVM-ikoner (standard)"
+
+#: src/scummvm_gtk/main.py:434
+msgid "MobyGames"
+msgstr "MobyGames"
+
+#: src/scummvm_gtk/main.py:435
+msgid "IGDB"
+msgstr "IGDB"
+
+#: src/scummvm_gtk/main.py:436
+msgid "TheGamesDB"
+msgstr "TheGamesDB"
+
+#: src/scummvm_gtk/main.py:437
+msgid "Local folder"
+msgstr "Lokal mapp"
+
+#: src/scummvm_gtk/main.py:447
+msgid "Local Art Folder"
+msgstr "Lokal bildmapp"
+
+#: src/scummvm_gtk/main.py:452
+msgid "Fetch Screenshots"
+msgstr "Hämta skärmbilder"
+
+#: src/scummvm_gtk/main.py:453
+msgid "Download in-game screenshots when available"
+msgstr "Hämta ner skärmdumpar från spelet när de är tillgängliga"
+
+#: src/scummvm_gtk/main.py:458
+msgid "Fetch Cover Art"
+msgstr "Hämta omslagsbilder"
+
+#: src/scummvm_gtk/main.py:459
+msgid "Download box art and cover images"
+msgstr "Hämta ner spelomslag och omslagsbilder"
+
+#: src/scummvm_gtk/main.py:468
 msgid "Cache"
 msgstr "Cache"
 
-#: src/scummvm_gtk/main.py:430
+#: src/scummvm_gtk/main.py:470
 msgid "Clear Cache"
 msgstr "Töm cache"
 
-#: src/scummvm_gtk/main.py:431
+#: src/scummvm_gtk/main.py:471
 msgid "Remove downloaded icons and Wikipedia data"
 msgstr "Ta bort hämtade ikoner och Wikipedia-data"
 
-#: src/scummvm_gtk/main.py:432
+#: src/scummvm_gtk/main.py:472
 msgid "Clear"
 msgstr "Töm"
 
-#: src/scummvm_gtk/main.py:454
+#: src/scummvm_gtk/main.py:500
 msgid "Cleared!"
 msgstr "Tömdes!"
 
-#: src/scummvm_gtk/main.py:465 src/scummvm_gtk/main.py:484
-#: src/scummvm_gtk/main.py:1021
+#: src/scummvm_gtk/main.py:511 src/scummvm_gtk/main.py:530
+#: src/scummvm_gtk/main.py:1067
 msgid "ScummVM GTK"
 msgstr "ScummVM GTK"
 
-#: src/scummvm_gtk/main.py:485
+#: src/scummvm_gtk/main.py:531
 msgid "ScummVM Game Launcher"
 msgstr "Spelstartare för ScummVM"
 
-#: src/scummvm_gtk/main.py:491
+#: src/scummvm_gtk/main.py:537
 msgid "Search games (Ctrl+F)"
 msgstr "Sök efter spel (Ctrl+F)"
 
-#: src/scummvm_gtk/main.py:498
+#: src/scummvm_gtk/main.py:544
 msgid "Grid View"
 msgstr "Rutnätsvy"
 
-#: src/scummvm_gtk/main.py:503
+#: src/scummvm_gtk/main.py:549
 msgid "Show Installed Only"
 msgstr "Visa endast installerade"
 
-#: src/scummvm_gtk/main.py:509
+#: src/scummvm_gtk/main.py:555
 msgid "Favorites First"
 msgstr "Favoriter först"
 
-#: src/scummvm_gtk/main.py:520
+#: src/scummvm_gtk/main.py:566
 msgid "Sort games"
 msgstr "Sortera spel"
 
-#: src/scummvm_gtk/main.py:526
+#: src/scummvm_gtk/main.py:572
 msgid "All Genres"
 msgstr "Alla genrer"
 
-#: src/scummvm_gtk/main.py:529
+#: src/scummvm_gtk/main.py:575
 msgid "Filter by genre"
 msgstr "Filtrera efter genre"
 
-#: src/scummvm_gtk/main.py:535
+#: src/scummvm_gtk/main.py:581
 msgid "Toggle Theme"
 msgstr "Växla tema"
 
-#: src/scummvm_gtk/main.py:542
+#: src/scummvm_gtk/main.py:588
 msgid "Scan for Games"
 msgstr "Sök efter spel"
 
-#: src/scummvm_gtk/main.py:543
+#: src/scummvm_gtk/main.py:589
 msgid "Group by Engine"
 msgstr "Gruppera efter motor"
 
-#: src/scummvm_gtk/main.py:544 src/scummvm_gtk/main.py:852
+#: src/scummvm_gtk/main.py:590 src/scummvm_gtk/main.py:898
 msgid "Export Library"
 msgstr "Exportera bibliotek"
 
-#: src/scummvm_gtk/main.py:545 src/scummvm_gtk/main.py:866
+#: src/scummvm_gtk/main.py:591 src/scummvm_gtk/main.py:912
 msgid "Import Library"
 msgstr "Importera bibliotek"
 
-#: src/scummvm_gtk/main.py:547
+#: src/scummvm_gtk/main.py:593
 msgid "About ScummVM GTK"
 msgstr "Om ScummVM GTK"
 
-#: src/scummvm_gtk/main.py:557
+#: src/scummvm_gtk/main.py:603
 msgid "Search games..."
 msgstr "Sök efter spel..."
 
-#: src/scummvm_gtk/main.py:610
+#: src/scummvm_gtk/main.py:656
 msgid "Loading games..."
 msgstr "Läser in spel..."
 
-#: src/scummvm_gtk/main.py:680
+#: src/scummvm_gtk/main.py:726
 #, python-format
 msgid "%d games (%d installed)"
 msgstr "%d spel (%d installerade)"
 
-#: src/scummvm_gtk/main.py:717
+#: src/scummvm_gtk/main.py:763
 #, python-format
 msgid "%d games shown"
 msgstr "%d spel visas"
 
-#: src/scummvm_gtk/main.py:764
+#: src/scummvm_gtk/main.py:810
 #, python-format
 msgid "Engine: %s"
 msgstr "Motor: %s"
 
-#: src/scummvm_gtk/main.py:800
+#: src/scummvm_gtk/main.py:846
 msgid "Scanning for games..."
 msgstr "Söker efter spel..."
 
-#: src/scummvm_gtk/main.py:868
+#: src/scummvm_gtk/main.py:914
 msgid "JSON files"
 msgstr "JSON-filer"
 
-#: src/scummvm_gtk/main.py:896
+#: src/scummvm_gtk/main.py:942
 msgid "ScummVM not found"
 msgstr "ScummVM hittades inte"
 
-#: src/scummvm_gtk/main.py:970
+#: src/scummvm_gtk/main.py:1016
 msgid "Welcome"
 msgstr "Välkommen"
 
-#: src/scummvm_gtk/main.py:975
+#: src/scummvm_gtk/main.py:1021
 msgid "Welcome to ScummVM Launcher"
 msgstr "Välkommen till ScummVM-startare"
 
-#: src/scummvm_gtk/main.py:977
+#: src/scummvm_gtk/main.py:1023
 msgid ""
 "Launch and manage ScummVM games.\n"
 "\n"
@@ -327,11 +395,11 @@ msgstr ""
 "✓ Favoriter och speltidsstatistik\n"
 "✓ Spelbeskrivningar från Wikipedia"
 
-#: src/scummvm_gtk/main.py:984
+#: src/scummvm_gtk/main.py:1030
 msgid "Get Started"
 msgstr "Kom igång"
 
-#: src/scummvm_gtk/main.py:1030
+#: src/scummvm_gtk/main.py:1076
 msgid ""
 "GTK4/Adwaita frontend for ScummVM game launcher.\n"
 "Browse, search and launch your ScummVM games."
@@ -339,6 +407,6 @@ msgstr ""
 "GTK4/Adwaita-gränssnitt för att starta ScummVM-spel.\n"
 "Bläddra, sök och starta dina ScummVM-spel."
 
-#: src/scummvm_gtk/main.py:1031
+#: src/scummvm_gtk/main.py:1077
 msgid "translator-credits"
 msgstr "Daniel Nylander <po@danielnylander.se>, 2026."
