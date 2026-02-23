@@ -54,6 +54,12 @@ def get_wiki_dir():
     return p
 
 
+def get_covers_dir():
+    p = get_cache_dir() / "covers"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 def get_config_dir():
     p = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "scummvm-gtk"
     p.mkdir(parents=True, exist_ok=True)
@@ -241,6 +247,175 @@ def download_icon(game_id, callback=None):
 
 def download_icon_async(game_id, callback):
     threading.Thread(target=download_icon, args=(game_id, callback), daemon=True).start()
+
+
+# ─── Cover Art ──────────────────────────────────────────────────────────
+
+def generate_placeholder_cover(game_name, cover_path):
+    """Generate a placeholder cover with game name if no cover art is found."""
+    try:
+        import gi
+        gi.require_version("Cairo", "1.0")
+        gi.require_version("Pango", "1.0")
+        gi.require_version("PangoCairo", "1.0")
+        from gi.repository import Cairo, Pango, PangoCairo
+        
+        # Create a 300x400 image (typical cover ratio)
+        WIDTH, HEIGHT = 300, 400
+        surface = Cairo.ImageSurface(Cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+        ctx = Cairo.Context(surface)
+        
+        # Background gradient (dark to light)
+        gradient = Cairo.LinearGradient(0, 0, 0, HEIGHT)
+        gradient.add_color_stop_rgb(0, 0.2, 0.25, 0.3)  # Dark blue
+        gradient.add_color_stop_rgb(1, 0.4, 0.45, 0.5)  # Light blue
+        ctx.set_source(gradient)
+        ctx.rectangle(0, 0, WIDTH, HEIGHT)
+        ctx.fill()
+        
+        # Border
+        ctx.set_source_rgb(0.6, 0.6, 0.7)
+        ctx.set_line_width(2)
+        ctx.rectangle(1, 1, WIDTH-2, HEIGHT-2)
+        ctx.stroke()
+        
+        # Text setup
+        layout = PangoCairo.create_layout(ctx)
+        font_desc = Pango.FontDescription.from_string("Sans Bold 24")
+        layout.set_font_description(font_desc)
+        layout.set_width((WIDTH - 40) * Pango.SCALE)
+        layout.set_alignment(Pango.Alignment.CENTER)
+        layout.set_wrap(Pango.WrapMode.WORD)
+        
+        # Game name text
+        layout.set_text(game_name)
+        text_width, text_height = layout.get_pixel_size()
+        
+        # Position text in center
+        ctx.move_to(20, (HEIGHT - text_height) / 2)
+        ctx.set_source_rgb(1.0, 1.0, 1.0)  # White text
+        PangoCairo.show_layout(ctx, layout)
+        
+        # Add "ScummVM" at bottom
+        small_font = Pango.FontDescription.from_string("Sans 12")
+        layout.set_font_description(small_font)
+        layout.set_text("ScummVM")
+        small_width, small_height = layout.get_pixel_size()
+        ctx.move_to((WIDTH - small_width) / 2, HEIGHT - 40)
+        ctx.set_source_rgb(0.8, 0.8, 0.8)  # Light gray
+        PangoCairo.show_layout(ctx, layout)
+        
+        # Save as PNG
+        surface.write_to_png(str(cover_path))
+        return True
+    except Exception:
+        return False
+
+
+def search_mobygames_cover(game_name, callback=None):
+    """Search for cover art on MobyGames (simplified approach)."""
+    try:
+        import urllib.parse
+        
+        # Search MobyGames for the game
+        search_query = urllib.parse.quote(game_name)
+        search_url = f"https://www.mobygames.com/search/?q={search_query}&type=game"
+        
+        req = urllib.request.Request(search_url, headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ScummVM-GTK/0.2.3"
+        })
+        
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            html = resp.read().decode('utf-8')
+        
+        # Look for cover art URL in the HTML (basic regex approach)
+        import re
+        
+        # Try to find cover image URLs
+        cover_patterns = [
+            r'src="(https://cdn\.mobygames\.com/covers/[^"]*\.jpg)"',
+            r'src="(https://cdn\.mobygames\.com/covers/[^"]*\.png)"',
+            r'href="([^"]*covers/[^"]*\.jpg)"',
+            r'href="([^"]*covers/[^"]*\.png)"'
+        ]
+        
+        for pattern in cover_patterns:
+            matches = re.findall(pattern, html)
+            if matches:
+                # Return the first valid cover URL found
+                cover_url = matches[0]
+                if not cover_url.startswith('http'):
+                    cover_url = 'https://www.mobygames.com' + cover_url
+                if callback:
+                    callback(cover_url)
+                return cover_url
+                
+    except Exception:
+        pass
+    
+    if callback:
+        callback(None)
+    return None
+
+
+def download_cover(game, callback=None):
+    """Download cover art for a game, with fallback to placeholder."""
+    covers_dir = get_covers_dir()
+    cover_path = covers_dir / f"{game.game_id}.png"
+    
+    # Return cached cover if exists
+    if cover_path.exists():
+        if callback:
+            callback(str(cover_path))
+        return str(cover_path)
+    
+    # Try to find cover art online
+    cover_url = search_mobygames_cover(game.name)
+    
+    if cover_url:
+        try:
+            req = urllib.request.Request(cover_url, headers={
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ScummVM-GTK/0.2.3"
+            })
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                with open(cover_path, "wb") as f:
+                    f.write(resp.read())
+            if callback:
+                callback(str(cover_path))
+            return str(cover_path)
+        except Exception:
+            pass
+    
+    # Fallback: generate placeholder
+    if generate_placeholder_cover(game.name, cover_path):
+        if callback:
+            callback(str(cover_path))
+        return str(cover_path)
+    
+    # Ultimate fallback: return None (will use icon)
+    if callback:
+        callback(None)
+    return None
+
+
+def download_cover_async(game, callback):
+    """Download cover art asynchronously."""
+    threading.Thread(target=download_cover, args=(game, callback), daemon=True).start()
+
+
+def clear_covers_cache():
+    """Clear all cached cover art."""
+    covers_dir = get_covers_dir()
+    for cover_file in covers_dir.glob("*.png"):
+        try:
+            cover_file.unlink()
+        except Exception:
+            pass
+    for cover_file in covers_dir.glob("*.jpg"):
+        try:
+            cover_file.unlink()
+        except Exception:
+            pass
 
 
 # ─── ScummVM detection ──────────────────────────────────────────────────

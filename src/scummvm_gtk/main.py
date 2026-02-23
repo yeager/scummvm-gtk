@@ -17,9 +17,10 @@ gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import Gtk, Adw, Gio, GLib, Gdk, GdkPixbuf
 
 from scummvm_gtk import __version__
-from scummvm_gtk.games import (
 from scummvm_gtk.accessibility import AccessibilityManager
+from scummvm_gtk.games import (
     Game, get_all_games, download_icon, download_icon_async,
+    download_cover, download_cover_async, clear_covers_cache,
     get_icons_dir, KNOWN_GAMES, ALL_GENRES, SORT_OPTIONS,
     sort_games, load_settings, save_settings, load_library, save_library,
     toggle_favorite, is_favorite, record_play_start, record_play_end,
@@ -87,9 +88,10 @@ class GameCard(Gtk.Box):
 
         self.append(top_row)
 
-        # Icon placeholder
+        # Cover art placeholder
         self.icon_widget = Gtk.Image.new_from_icon_name("applications-games-symbolic")
-        self.icon_widget.set_pixel_size(96)
+        self.icon_widget.set_pixel_size(140)  # Wider for cover art
+        self.icon_widget.set_size_request(140, 190)  # Cover art aspect ratio
         self.append(self.icon_widget)
 
         # Title
@@ -139,12 +141,29 @@ class GameCard(Gtk.Box):
         click.connect("released", self._on_clicked)
         self.add_controller(click)
 
-        # Load icon async
-        download_icon_async(game.icon_name, self._on_icon_loaded)
+        # Load cover art async
+        download_cover_async(game, self._on_cover_loaded)
+
+    def _on_cover_loaded(self, path):
+        if path:
+            GLib.idle_add(self._set_cover, path)
+        else:
+            # Fallback to icon if cover failed
+            download_icon_async(self.game.icon_name, self._on_icon_loaded)
 
     def _on_icon_loaded(self, path):
         if path:
             GLib.idle_add(self._set_icon, path)
+
+    def _set_cover(self, path):
+        try:
+            # Load cover art with proper aspect ratio for game covers
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 140, 190, False)
+            texture = Gdk.Texture.new_for_pixbuf(pixbuf)
+            self.icon_widget.set_from_paintable(texture)
+        except Exception:
+            # Fallback to icon on error
+            download_icon_async(self.game.icon_name, self._on_icon_loaded)
 
     def _set_icon(self, path):
         try:
@@ -261,6 +280,20 @@ class DetailPanel(Gtk.Box):
 
         self._current_game = None
 
+    def _on_cover_downloaded(self, path):
+        """Called when cover art is downloaded."""
+        if path and self._current_game:
+            GLib.idle_add(self._update_cover, path)
+    
+    def _update_cover(self, path):
+        """Update the cover art display."""
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 240, 320, False)
+            texture = Gdk.Texture.new_for_pixbuf(pixbuf)
+            self.icon.set_from_paintable(texture)
+        except Exception:
+            pass
+
     def _update_fav_icon(self, is_fav):
         icon = "starred-symbolic" if is_fav else "non-starred-symbolic"
         self.fav_btn.set_icon_name(icon)
@@ -316,17 +349,41 @@ class DetailPanel(Gtk.Box):
         else:
             self.lastplayed_row.set_subtitle(_("Never"))
 
-        # Icon — larger (feature 4)
-        icon_path = get_icons_dir() / f"{game.icon_name}.png"
-        if icon_path.exists():
+        # Cover art — larger (feature 4)
+        from pathlib import Path
+        covers_dir = Path.home() / ".cache" / "scummvm-gtk" / "covers" 
+        cover_path = covers_dir / f"{game.game_id}.png"
+        if cover_path.exists():
             try:
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(icon_path), 192, 192, True)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(cover_path), 240, 320, False)
                 texture = Gdk.Texture.new_for_pixbuf(pixbuf)
                 self.icon.set_from_paintable(texture)
             except Exception:
-                self.icon.set_from_icon_name("applications-games-symbolic")
+                # Fallback to icon
+                icon_path = get_icons_dir() / f"{game.icon_name}.png"
+                if icon_path.exists():
+                    try:
+                        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(icon_path), 192, 192, True)
+                        texture = Gdk.Texture.new_for_pixbuf(pixbuf)
+                        self.icon.set_from_paintable(texture)
+                    except Exception:
+                        self.icon.set_from_icon_name("applications-games-symbolic")
+                else:
+                    self.icon.set_from_icon_name("applications-games-symbolic")
         else:
-            self.icon.set_from_icon_name("applications-games-symbolic")
+            # No cover art, try icon
+            icon_path = get_icons_dir() / f"{game.icon_name}.png"
+            if icon_path.exists():
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(icon_path), 192, 192, True)
+                    texture = Gdk.Texture.new_for_pixbuf(pixbuf)
+                    self.icon.set_from_paintable(texture)
+                except Exception:
+                    self.icon.set_from_icon_name("applications-games-symbolic")
+            else:
+                self.icon.set_from_icon_name("applications-games-symbolic")
+                # Try to download cover art async
+                download_cover_async(game, self._on_cover_downloaded)
 
         # Wikipedia description (feature 1) — async
         self.wiki_label.set_text(_("Loading Wikipedia summary..."))
@@ -588,6 +645,7 @@ class MainWindow(Adw.ApplicationWindow):
         menu = Gio.Menu()
         menu.append(_("Scan for Games"), "win.scan")
         menu.append(_("Group by Engine"), "win.group-engine")
+        menu.append(_("Refresh Covers"), "win.refresh-covers")
         menu.append(_("Export Library"), "win.export")
         menu.append(_("Import Library"), "win.import")
         menu.append(_("Settings"), "win.settings")
@@ -674,6 +732,10 @@ class MainWindow(Adw.ApplicationWindow):
         scan_action = Gio.SimpleAction.new("scan", None)
         scan_action.connect("activate", self._on_scan)
         self.add_action(scan_action)
+
+        refresh_covers_action = Gio.SimpleAction.new("refresh-covers", None)
+        refresh_covers_action.connect("activate", self._on_refresh_covers)
+        self.add_action(refresh_covers_action)
 
         settings_action = Gio.SimpleAction.new("settings", None)
         settings_action.connect("activate", self._on_open_settings)
@@ -846,6 +908,15 @@ class MainWindow(Adw.ApplicationWindow):
     def _on_scan(self, action, param):
         self.status_label.set_text(_("Scanning for games..."))
         self._load_games()
+
+    def _on_refresh_covers(self, action, param):
+        """Refresh all cover art by clearing cache and reloading."""
+        self.status_label.set_text(_("Refreshing cover art..."))
+        # Clear covers cache
+        clear_covers_cache()
+        # Refresh the current view to trigger cover reloading
+        self._refresh_view()
+        self.status_label.set_text(_("Cover art refreshed"))
 
     def _on_sort_changed(self, dropdown, _pspec):
         idx = dropdown.get_selected()
