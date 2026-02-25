@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=ScummVM GTK
+Name[sv]=ScummVM GTK
+Comment=GTK frontend for ScummVM game engine
+Comment[sv]=GTK-gränssnitt för ScummVM-spelmotorn
+Exec=scummvm-gtk
+Icon=scummvm-gtk
+Categories=Game;GTK;
+Terminal=false
+StartupNotify=true
+StartupWMClass=se.danielnylander.scummvm-gtk
